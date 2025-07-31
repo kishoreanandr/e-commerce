@@ -33,8 +33,9 @@ public class Product {
     @Column(name = "retail_price", precision = 10, scale = 2)
     private BigDecimal retailPrice;
     
-    @Column(name = "department")
-    private String department;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
     
     @Column(name = "sku")
     private String sku;

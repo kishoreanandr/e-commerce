@@ -1,7 +1,7 @@
 # Product REST API Documentation
 
 ## Overview
-This REST API provides endpoints to manage and retrieve product information from the ecommerce database.
+This REST API provides endpoints to manage and retrieve product information from the ecommerce database. The API has been refactored to use proper foreign key relationships with departments.
 
 ## Base URL
 ```
@@ -35,7 +35,11 @@ GET http://localhost:8080/api/products?page=0&size=5
       "name": "Smartphone",
       "brand": "TechCorp",
       "retailPrice": 299.99,
-      "department": "Electronics",
+      "department": {
+        "id": 1,
+        "name": "Electronics",
+        "description": null
+      },
       "sku": "TECH-001",
       "distributionCenterId": 1
     }
@@ -69,7 +73,11 @@ GET http://localhost:8080/api/products/1
   "name": "Smartphone",
   "brand": "TechCorp",
   "retailPrice": 299.99,
-  "department": "Electronics",
+  "department": {
+    "id": 1,
+    "name": "Electronics",
+    "description": null
+  },
   "sku": "TECH-001",
   "distributionCenterId": 1
 }
@@ -117,7 +125,41 @@ Retrieves products filtered by brand with pagination.
 GET http://localhost:8080/api/products/brand/TechCorp?page=0&size=5
 ```
 
-### 5. Search Products by Name
+### 5. Get Products by Department ID
+**GET** `/api/products/department/{departmentId}`
+
+Retrieves products filtered by department ID with pagination.
+
+**Path Parameters:**
+- `departmentId`: Department ID (integer)
+
+**Query Parameters:**
+- `page` (optional): Page number (default: 0)
+- `size` (optional): Number of items per page (default: 10)
+
+**Example Request:**
+```
+GET http://localhost:8080/api/products/department/1?page=0&size=5
+```
+
+### 6. Get Products by Department Name
+**GET** `/api/products/department/name/{departmentName}`
+
+Retrieves products filtered by department name with pagination.
+
+**Path Parameters:**
+- `departmentName`: Department name (string)
+
+**Query Parameters:**
+- `page` (optional): Page number (default: 0)
+- `size` (optional): Number of items per page (default: 10)
+
+**Example Request:**
+```
+GET http://localhost:8080/api/products/department/name/Electronics?page=0&size=5
+```
+
+### 7. Search Products by Name
 **GET** `/api/products/search`
 
 Searches products by name (case-insensitive) with pagination.
@@ -132,11 +174,65 @@ Searches products by name (case-insensitive) with pagination.
 GET http://localhost:8080/api/products/search?name=phone&page=0&size=5
 ```
 
+## Department Endpoints
+
+### 1. Get All Departments
+**GET** `/api/departments`
+
+Retrieves all departments.
+
+**Example Request:**
+```
+GET http://localhost:8080/api/departments
+```
+
+**Example Response:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Electronics",
+    "description": null
+  },
+  {
+    "id": 2,
+    "name": "Clothing",
+    "description": null
+  }
+]
+```
+
+### 2. Get Department by ID
+**GET** `/api/departments/{id}`
+
+Retrieves a specific department by its ID.
+
+**Path Parameters:**
+- `id`: Department ID (integer)
+
+**Example Request:**
+```
+GET http://localhost:8080/api/departments/1
+```
+
+### 3. Get Department by Name
+**GET** `/api/departments/name/{name}`
+
+Retrieves a specific department by its name.
+
+**Path Parameters:**
+- `name`: Department name (string)
+
+**Example Request:**
+```
+GET http://localhost:8080/api/departments/name/Electronics
+```
+
 ## HTTP Status Codes
 
 - **200 OK**: Request successful
 - **400 Bad Request**: Invalid parameters or request format
-- **404 Not Found**: Product not found
+- **404 Not Found**: Product or department not found
 - **500 Internal Server Error**: Server error
 
 ## Error Response Format
@@ -174,18 +270,53 @@ curl -X GET "http://localhost:8080/api/products/search?name=phone"
 
 # Get products by category
 curl -X GET "http://localhost:8080/api/products/category/Electronics"
+
+# Get products by department name
+curl -X GET "http://localhost:8080/api/products/department/name/Electronics"
+
+# Get all departments
+curl -X GET "http://localhost:8080/api/departments"
+
+# Get department by ID
+curl -X GET "http://localhost:8080/api/departments/1"
 ```
 
-## Database Schema
+## Database Schema (After Refactoring)
 
-The API connects to the `ecommerce_db` database with the following product table structure:
+The API connects to the `ecommerce_db` database with the following table structure:
 
+### Products Table:
 - `id`: Primary key (Integer)
 - `cost`: Product cost (Decimal)
 - `category`: Product category (String)
 - `name`: Product name (Text)
 - `brand`: Product brand (String)
 - `retail_price`: Retail price (Decimal)
-- `department`: Department (String)
+- `department_id`: Foreign key to departments (Integer)
 - `sku`: Stock keeping unit (String)
-- `distribution_center_id`: Foreign key to distribution centers (Integer) 
+- `distribution_center_id`: Foreign key to distribution centers (Integer)
+
+### Departments Table:
+- `id`: Primary key (Integer)
+- `name`: Department name (String, Unique)
+- `description`: Department description (Text)
+
+### Distribution Centers Table:
+- `id`: Primary key (Integer)
+- `name`: Center name (String)
+- `latitude`: Latitude coordinate (Decimal)
+- `longitude`: Longitude coordinate (Decimal)
+
+## Database Relationships
+
+- **Products** → **Departments**: Many-to-One (via `department_id`)
+- **Products** → **Distribution Centers**: Many-to-One (via `distribution_center_id`)
+
+## Migration Notes
+
+The database has been refactored to:
+1. ✅ Create a separate `departments` table
+2. ✅ Extract unique department names from products
+3. ✅ Populate the departments table
+4. ✅ Update products to reference departments via foreign key
+5. ✅ Update API to include department information 

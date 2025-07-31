@@ -16,6 +16,9 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
     
+    @Autowired
+    private DepartmentService departmentService;
+    
     /**
      * Get all products with pagination
      */
@@ -48,11 +51,19 @@ public class ProductService {
     }
     
     /**
-     * Get products by department with pagination
+     * Get products by department ID with pagination
      */
-    public Page<Product> getProductsByDepartment(String department, int page, int size) {
+    public Page<Product> getProductsByDepartmentId(Integer departmentId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findByDepartment(department, pageable);
+        return productRepository.findByDepartmentId(departmentId, pageable);
+    }
+    
+    /**
+     * Get products by department name with pagination
+     */
+    public Page<Product> getProductsByDepartmentName(String departmentName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findByDepartmentName(departmentName, pageable);
     }
     
     /**

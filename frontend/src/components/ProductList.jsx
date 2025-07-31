@@ -23,9 +23,10 @@ const ProductList = () => {
       setError(null);
       
       const response = await apiService.getAllProducts(currentPage, pageSize);
-      setProducts(response.products || []);
+      // Handle Spring Data Page response format
+      setProducts(response.content || []);
       setTotalPages(response.totalPages || 0);
-      setTotalItems(response.totalItems || 0);
+      setTotalItems(response.totalElements || 0);
     } catch (err) {
       setError('Failed to load products. Please try again later.');
       console.error('Error fetching products:', err);
@@ -46,9 +47,10 @@ const ProductList = () => {
       setError(null);
       
       const response = await apiService.searchProductsByName(searchTerm, currentPage, pageSize);
-      setProducts(response.products || []);
+      // Handle Spring Data Page response format
+      setProducts(response.content || []);
       setTotalPages(response.totalPages || 0);
-      setTotalItems(response.totalItems || 0);
+      setTotalItems(response.totalElements || 0);
     } catch (err) {
       setError('Failed to search products. Please try again.');
       console.error('Error searching products:', err);

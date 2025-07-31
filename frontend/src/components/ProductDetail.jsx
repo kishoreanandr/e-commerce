@@ -147,7 +147,14 @@ const ProductDetail = () => {
                 </div>
                 <div className="col-sm-6">
                   <h6 className="text-muted">Department</h6>
-                  <p className="mb-3">{product.department || 'N/A'}</p>
+                  <p className="mb-3">
+                    {product.department?.name || 'N/A'}
+                    {product.department?.description && (
+                      <small className="d-block text-muted">
+                        {product.department.description}
+                      </small>
+                    )}
+                  </p>
                 </div>
                 <div className="col-sm-6">
                   <h6 className="text-muted">SKU</h6>
