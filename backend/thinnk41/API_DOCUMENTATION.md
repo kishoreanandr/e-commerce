@@ -1,322 +1,246 @@
-# Product REST API Documentation
-
-## Overview
-This REST API provides endpoints to manage and retrieve product information from the ecommerce database. The API has been refactored to use proper foreign key relationships with departments.
+# E-commerce API Documentation
 
 ## Base URL
 ```
-http://localhost:8080/api/products
+http://localhost:8080/api
 ```
 
-## Endpoints
+## Product Endpoints
 
-### 1. Get All Products
-**GET** `/api/products`
+### 1. Get All Products (Paginated)
+- **URL**: `GET /products`
+- **Query Parameters**:
+  - `page` (optional): Page number (default: 0)
+  - `size` (optional): Page size (default: 20)
+- **Response**: Spring Data Page with ProductDTO objects
+- **Example**: `GET /api/products?page=0&size=10`
 
-Retrieves all products with pagination support.
+### 2. Get Product by ID
+- **URL**: `GET /products/{id}`
+- **Response**: ProductDTO object
+- **Example**: `GET /api/products/1`
 
-**Query Parameters:**
-- `page` (optional): Page number (default: 0)
-- `size` (optional): Number of items per page (default: 10)
+### 3. Get Products by Category
+- **URL**: `GET /products/category/{category}`
+- **Query Parameters**:
+  - `page` (optional): Page number (default: 0)
+  - `size` (optional): Page size (default: 20)
+- **Response**: Spring Data Page with ProductDTO objects
+- **Example**: `GET /api/products/category/Tops%20%26%20Tees?page=0&size=10`
 
-**Example Request:**
-```
-GET http://localhost:8080/api/products?page=0&size=5
-```
+### 4. Get Products by Brand
+- **URL**: `GET /products/brand/{brand}`
+- **Query Parameters**:
+  - `page` (optional): Page number (default: 0)
+  - `size` (optional): Page size (default: 20)
+- **Response**: Spring Data Page with ProductDTO objects
+- **Example**: `GET /api/products/brand/Seven7?page=0&size=10`
 
-**Example Response:**
+### 5. Search Products by Name
+- **URL**: `GET /products/search`
+- **Query Parameters**:
+  - `name`: Product name to search for
+  - `page` (optional): Page number (default: 0)
+  - `size` (optional): Page size (default: 20)
+- **Response**: Spring Data Page with ProductDTO objects
+- **Example**: `GET /api/products/search?name=Seven7&page=0&size=10`
+
+### 6. Get Products by Department ID
+- **URL**: `GET /products/department/{departmentId}`
+- **Query Parameters**:
+  - `page` (optional): Page number (default: 0)
+  - `size` (optional): Page size (default: 20)
+- **Response**: Spring Data Page with ProductDTO objects
+- **Example**: `GET /api/products/department/2?page=0&size=10`
+
+### 7. Get Products by Department Name
+- **URL**: `GET /products/department/name/{departmentName}`
+- **Query Parameters**:
+  - `page` (optional): Page number (default: 0)
+  - `size` (optional): Page size (default: 20)
+- **Response**: Spring Data Page with ProductDTO objects
+- **Example**: `GET /api/products/department/name/Women?page=0&size=10`
+
+## Department Endpoints
+
+### 1. Get All Departments with Product Count
+- **URL**: `GET /departments`
+- **Response**: Object with departments array containing DepartmentWithProductCountDTO objects
+- **Example**: `GET /api/departments`
+
+**Response Format**:
 ```json
 {
-  "products": [
+  "departments": [
     {
       "id": 1,
-      "cost": 15.50,
-      "category": "Electronics",
-      "name": "Smartphone",
-      "brand": "TechCorp",
-      "retailPrice": 299.99,
-      "department": {
-        "id": 1,
-        "name": "Electronics",
-        "description": null
-      },
-      "sku": "TECH-001",
-      "distributionCenterId": 1
+      "name": "Electronics",
+      "description": "Electronic devices and accessories",
+      "productCount": 25
+    },
+    {
+      "id": 2,
+      "name": "Women",
+      "description": "Women's clothing and accessories",
+      "productCount": 150
     }
-  ],
-  "currentPage": 0,
-  "totalItems": 1000,
-  "totalPages": 200,
-  "size": 5
+  ]
 }
 ```
 
-### 2. Get Product by ID
-**GET** `/api/products/{id}`
+### 2. Get Department by ID
+- **URL**: `GET /departments/{id}`
+- **Response**: DepartmentDTO object
+- **Example**: `GET /api/departments/2`
 
-Retrieves a specific product by its ID.
+### 3. Get Department by Name
+- **URL**: `GET /departments/name/{name}`
+- **Response**: DepartmentDTO object
+- **Example**: `GET /api/departments/name/Women`
 
-**Path Parameters:**
-- `id`: Product ID (integer)
+### 4. Get Products by Department ID
+- **URL**: `GET /departments/{id}/products`
+- **Query Parameters**:
+  - `page` (optional): Page number (default: 0)
+  - `size` (optional): Page size (default: 20)
+- **Response**: Object with department name and products array
+- **Example**: `GET /api/departments/2/products?page=0&size=10`
 
-**Example Request:**
+**Response Format**:
+```json
+{
+  "department": "Women",
+  "products": [
+    {
+      "id": 1,
+      "name": "Seven7 Women's Long Sleeve Stripe Belted Top",
+      "brand": "Seven7",
+      "category": "Tops & Tees",
+      "retailPrice": 49.00,
+      "cost": 27.05,
+      "department": {
+        "id": 2,
+        "name": "Women",
+        "description": null
+      },
+      "sku": "C4CA4238A0B923820DCC509A6F75849B",
+      "distributionCenterId": 1
+    }
+  ],
+  "totalElements": 150,
+  "totalPages": 8,
+  "currentPage": 0
+}
 ```
-GET http://localhost:8080/api/products/1
-```
 
-**Example Response:**
+## Response Formats
+
+### ProductDTO
 ```json
 {
   "id": 1,
-  "cost": 15.50,
-  "category": "Electronics",
-  "name": "Smartphone",
-  "brand": "TechCorp",
-  "retailPrice": 299.99,
+  "cost": 27.05,
+  "category": "Tops & Tees",
+  "name": "Seven7 Women's Long Sleeve Stripe Belted Top",
+  "brand": "Seven7",
+  "retailPrice": 49.00,
   "department": {
-    "id": 1,
-    "name": "Electronics",
+    "id": 2,
+    "name": "Women",
     "description": null
   },
-  "sku": "TECH-001",
+  "sku": "C4CA4238A0B923820DCC509A6F75849B",
   "distributionCenterId": 1
 }
 ```
 
-**Error Response (Product not found):**
+### DepartmentDTO
 ```json
 {
-  "error": "Product not found",
-  "message": "Product with ID 999 does not exist"
+  "id": 2,
+  "name": "Women",
+  "description": "Women's clothing and accessories"
 }
 ```
 
-### 3. Get Products by Category
-**GET** `/api/products/category/{category}`
-
-Retrieves products filtered by category with pagination.
-
-**Path Parameters:**
-- `category`: Product category (string)
-
-**Query Parameters:**
-- `page` (optional): Page number (default: 0)
-- `size` (optional): Number of items per page (default: 10)
-
-**Example Request:**
-```
-GET http://localhost:8080/api/products/category/Electronics?page=0&size=5
-```
-
-### 4. Get Products by Brand
-**GET** `/api/products/brand/{brand}`
-
-Retrieves products filtered by brand with pagination.
-
-**Path Parameters:**
-- `brand`: Product brand (string)
-
-**Query Parameters:**
-- `page` (optional): Page number (default: 0)
-- `size` (optional): Number of items per page (default: 10)
-
-**Example Request:**
-```
-GET http://localhost:8080/api/products/brand/TechCorp?page=0&size=5
-```
-
-### 5. Get Products by Department ID
-**GET** `/api/products/department/{departmentId}`
-
-Retrieves products filtered by department ID with pagination.
-
-**Path Parameters:**
-- `departmentId`: Department ID (integer)
-
-**Query Parameters:**
-- `page` (optional): Page number (default: 0)
-- `size` (optional): Number of items per page (default: 10)
-
-**Example Request:**
-```
-GET http://localhost:8080/api/products/department/1?page=0&size=5
-```
-
-### 6. Get Products by Department Name
-**GET** `/api/products/department/name/{departmentName}`
-
-Retrieves products filtered by department name with pagination.
-
-**Path Parameters:**
-- `departmentName`: Department name (string)
-
-**Query Parameters:**
-- `page` (optional): Page number (default: 0)
-- `size` (optional): Number of items per page (default: 10)
-
-**Example Request:**
-```
-GET http://localhost:8080/api/products/department/name/Electronics?page=0&size=5
-```
-
-### 7. Search Products by Name
-**GET** `/api/products/search`
-
-Searches products by name (case-insensitive) with pagination.
-
-**Query Parameters:**
-- `name`: Search term (required)
-- `page` (optional): Page number (default: 0)
-- `size` (optional): Number of items per page (default: 10)
-
-**Example Request:**
-```
-GET http://localhost:8080/api/products/search?name=phone&page=0&size=5
-```
-
-## Department Endpoints
-
-### 1. Get All Departments
-**GET** `/api/departments`
-
-Retrieves all departments.
-
-**Example Request:**
-```
-GET http://localhost:8080/api/departments
-```
-
-**Example Response:**
+### DepartmentWithProductCountDTO
 ```json
-[
-  {
-    "id": 1,
-    "name": "Electronics",
-    "description": null
-  },
-  {
-    "id": 2,
-    "name": "Clothing",
-    "description": null
-  }
-]
-```
-
-### 2. Get Department by ID
-**GET** `/api/departments/{id}`
-
-Retrieves a specific department by its ID.
-
-**Path Parameters:**
-- `id`: Department ID (integer)
-
-**Example Request:**
-```
-GET http://localhost:8080/api/departments/1
-```
-
-### 3. Get Department by Name
-**GET** `/api/departments/name/{name}`
-
-Retrieves a specific department by its name.
-
-**Path Parameters:**
-- `name`: Department name (string)
-
-**Example Request:**
-```
-GET http://localhost:8080/api/departments/name/Electronics
+{
+  "id": 2,
+  "name": "Women",
+  "description": "Women's clothing and accessories",
+  "productCount": 150
+}
 ```
 
 ## HTTP Status Codes
 
 - **200 OK**: Request successful
-- **400 Bad Request**: Invalid parameters or request format
-- **404 Not Found**: Product or department not found
+- **404 Not Found**: Resource not found
 - **500 Internal Server Error**: Server error
 
 ## Error Response Format
-
-All error responses follow this format:
 ```json
 {
-  "error": "Error type",
-  "message": "Detailed error message"
+  "error": "Error message",
+  "message": "Detailed error description"
 }
 ```
 
-## CORS Support
+## Database Schema
 
-The API includes CORS headers to support frontend integration. All endpoints are accessible from any origin.
+### Products Table
+- `id` (Primary Key)
+- `cost` (DECIMAL)
+- `category` (VARCHAR)
+- `name` (TEXT)
+- `brand` (VARCHAR)
+- `retail_price` (DECIMAL)
+- `department_id` (Foreign Key to departments.id)
+- `sku` (VARCHAR)
+- `distribution_center_id` (INTEGER)
 
-## Testing the API
+### Departments Table
+- `id` (Primary Key)
+- `name` (VARCHAR, Unique)
+- `description` (TEXT)
 
-You can test the API using:
-- **Postman**: Import the endpoints and test with different parameters
-- **cURL**: Use command line tools
-- **Browser**: Direct URL access for GET requests
+### Distribution Centers Table
+- `id` (Primary Key)
+- `name` (VARCHAR)
+- `location` (VARCHAR)
 
-### Example cURL commands:
+## Testing with cURL
 
+### Test Department Endpoints
+```bash
+# Get all departments with product count
+curl -X GET "http://localhost:8080/api/departments"
+
+# Get department by ID
+curl -X GET "http://localhost:8080/api/departments/2"
+
+# Get department by name
+curl -X GET "http://localhost:8080/api/departments/name/Women"
+
+# Get products by department ID
+curl -X GET "http://localhost:8080/api/departments/2/products?page=0&size=5"
+```
+
+### Test Product Endpoints
 ```bash
 # Get all products
-curl -X GET "http://localhost:8080/api/products"
+curl -X GET "http://localhost:8080/api/products?page=0&size=5"
 
 # Get product by ID
 curl -X GET "http://localhost:8080/api/products/1"
 
 # Search products
-curl -X GET "http://localhost:8080/api/products/search?name=phone"
+curl -X GET "http://localhost:8080/api/products/search?name=Seven7"
 
 # Get products by category
-curl -X GET "http://localhost:8080/api/products/category/Electronics"
+curl -X GET "http://localhost:8080/api/products/category/Tops%20%26%20Tees"
 
-# Get products by department name
-curl -X GET "http://localhost:8080/api/products/department/name/Electronics"
-
-# Get all departments
-curl -X GET "http://localhost:8080/api/departments"
-
-# Get department by ID
-curl -X GET "http://localhost:8080/api/departments/1"
-```
-
-## Database Schema (After Refactoring)
-
-The API connects to the `ecommerce_db` database with the following table structure:
-
-### Products Table:
-- `id`: Primary key (Integer)
-- `cost`: Product cost (Decimal)
-- `category`: Product category (String)
-- `name`: Product name (Text)
-- `brand`: Product brand (String)
-- `retail_price`: Retail price (Decimal)
-- `department_id`: Foreign key to departments (Integer)
-- `sku`: Stock keeping unit (String)
-- `distribution_center_id`: Foreign key to distribution centers (Integer)
-
-### Departments Table:
-- `id`: Primary key (Integer)
-- `name`: Department name (String, Unique)
-- `description`: Department description (Text)
-
-### Distribution Centers Table:
-- `id`: Primary key (Integer)
-- `name`: Center name (String)
-- `latitude`: Latitude coordinate (Decimal)
-- `longitude`: Longitude coordinate (Decimal)
-
-## Database Relationships
-
-- **Products** → **Departments**: Many-to-One (via `department_id`)
-- **Products** → **Distribution Centers**: Many-to-One (via `distribution_center_id`)
-
-## Migration Notes
-
-The database has been refactored to:
-1. ✅ Create a separate `departments` table
-2. ✅ Extract unique department names from products
-3. ✅ Populate the departments table
-4. ✅ Update products to reference departments via foreign key
-5. ✅ Update API to include department information 
+# Get products by brand
+curl -X GET "http://localhost:8080/api/products/brand/Seven7"
+``` 
