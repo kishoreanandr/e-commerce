@@ -199,7 +199,7 @@ frontend/.vscode-test
 # ===========================================
 
 # Large CSV files (uncomment if you don't want to track them)
-# ecommerce-dataset-main/archive/archive/*.csv
+ecommerce-dataset-main/archive/archive/*.csv
 
 # ===========================================
 # System Files
